@@ -67,6 +67,18 @@ func FetchSmoothieGo(release *github.RepositoryRelease) (string, error) {
 	return FetchSmoothieGoEx(release, runtime.GOOS, runtime.GOARCH, archive)
 }
 
+func FetchSmoothieGoFromGitTag(tag string) (string, error) {
+	ctx := context.Background()
+
+	rep, _, err := client.Repositories.GetReleaseByTag(ctx, "smoothie-go", "smoothie-go", tag)
+
+	if err != nil {
+		return "", err
+	}
+
+	return FetchSmoothieGo(rep)
+}
+
 func FetchLatestNonPreRelease() (*github.RepositoryRelease, error) {
 	releases, err := FetchReleases()
 	if err != nil {

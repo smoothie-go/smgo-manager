@@ -54,10 +54,10 @@ func getManagerDirectory() string {
 	return path
 }
 
-func GetVersionsDirectory() string {
-	data_dir := getManagerDirectory()
+func manDirJoin(name string) string {
+	man_dir := getManagerDirectory()
 
-	path := filepath.Join(data_dir, "Versions")
+	path := filepath.Join(man_dir, name)
 	d, err := os.Stat(path)
 	if os.IsNotExist(err) {
 		err := os.MkdirAll(path, 0755)
@@ -69,4 +69,16 @@ func GetVersionsDirectory() string {
 	}
 
 	return path
+}
+
+func GetVersionsDirectory() string {
+	return manDirJoin("Versions")
+}
+
+func GetDownloadsDirectory() string {
+	return manDirJoin("Downloads")
+}
+
+func GetTempDirectory() string {
+	return manDirJoin("Temp")
 }
