@@ -35,7 +35,7 @@ func userDataDir() (string, error) {
 	}
 }
 
-func getManagerDirectory() string {
+func GetManagerDirectory() string {
 	data_dir, err := userDataDir()
 	if err != nil {
 		hlog.Fatal(err.Error())
@@ -55,7 +55,7 @@ func getManagerDirectory() string {
 }
 
 func manDirJoin(name string) string {
-	man_dir := getManagerDirectory()
+	man_dir := GetManagerDirectory()
 
 	path := filepath.Join(man_dir, name)
 	d, err := os.Stat(path)

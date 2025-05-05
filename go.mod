@@ -1,6 +1,6 @@
 module github.com/smoothie-go/smgo-manager
 
-go 1.24.2
+go 1.23
 
 require (
 	github.com/google/go-github v17.0.0+incompatible

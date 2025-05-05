@@ -143,12 +143,7 @@ func generateLaunchScript(verDir string) {
 	bin := filepath.Join(verDir, fmt.Sprintf("smoothie-go-%s-%s", runtime.GOOS, runtime.GOARCH))
 
 	script := fmt.Sprintf(`#!/bin/bash
-export LD_LIBRARY_PATH="%s"
-export PATH="$PATH:%s"
-export PYTHONPATH="%s"
-export PYTHONHOME="%s"
-export VAPOURSYNTH_CONF_PATH="%s"
-exec "%s" "$@"
+exec env LD_LIBRARY_PATH="%s" PATH="$PATH:%s" PYTHONPATH="%s" PYTHONHOME="%s" VAPOURSYNTH_CONF_PATH="%s" "%s" "$@"
 `, libDir, verDir, py, verDir, conf, bin)
 
 	if err := os.WriteFile(filepath.Join(verDir, "smoothie-go"), []byte(script), 0755); err != nil {
