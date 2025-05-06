@@ -45,7 +45,7 @@ func Set() {
 	}
 
 	smgo_script_path := filepath.Join(paths.GetVersionsDirectory(), release.GetTagName(), "smoothie-go")
-	if _, err := os.Stat(smgo_script_path); err == os.ErrNotExist {
+	if _, err := os.Stat(smgo_script_path); os.IsNotExist(err) {
 		install.Package(release.GetTagName())
 	}
 
