@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
+	sz "github.com/bodgit/sevenzip"
 	"github.com/smoothie-go/smgo-manager/hlog"
 	"github.com/ulikunitz/xz"
 )
@@ -168,4 +169,47 @@ func UntarXz(source, target string) error {
 	}
 
 	return nil
+}
+
+func Un7z(source, target string) {
+	extractFile := func(file *sz.File) {
+		filePath := filepath.Join(target, file.Name)
+		if file.FileInfo().IsDir() {
+			os.MkdirAll(filePath, os.ModePerm)
+			return
+		}
+
+		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+			hlog.Fatal(err.Error())
+		}
+
+		outFile, err := os.Create(filePath)
+		if err != nil {
+			hlog.Fatal(err.Error())
+		}
+		defer outFile.Close()
+
+		f, err := file.Open()
+		if err != nil {
+			hlog.Fatal(err.Error())
+		}
+		defer f.Close()
+
+		_, err = io.Copy(outFile, f)
+		if err != nil {
+			hlog.Fatal(err.Error())
+		}
+	}
+
+	func() {
+		archive, err := sz.OpenReader(source)
+		if err != nil {
+			hlog.Fatal(err.Error())
+		}
+		defer archive.Close()
+
+		for _, f := range archive.File {
+			extractFile(f)
+		}
+	}()
 }
