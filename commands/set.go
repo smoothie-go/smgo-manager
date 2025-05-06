@@ -50,7 +50,8 @@ func Set() {
 	}
 
 	err = os.Remove(filepath.Join(paths.GetManagerDirectory(), "smoothie-go"))
-	if err != nil {
+	if os.IsNotExist(err) {
+	} else if err != nil {
 		hlog.Fatal(err.Error())
 	}
 
