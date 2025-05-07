@@ -17,7 +17,7 @@ import (
 
 var links = map[string]string{
 	"ffmpeg":   "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-gpl-7.1.zip",
-	"vsbundle": "https://github.com/smoothie-go/VSBundler/releases/download/Nightly_2025.05.06_04-44/VapourSynth.7z",
+	"vsbundle": "https://github.com/smoothie-go/VSBundler/releases/download/Nightly_2025.05.07_14-49/VapourSynth.zip",
 }
 
 func Package(tag string) {
@@ -25,7 +25,7 @@ func Package(tag string) {
 	tmpDir := paths.GetTempDirectory()
 
 	pkgs := []pkg{
-		{"vsbundle", "VapourSynth.7z", arch.Un7z},
+		{"vsbundle", "VapourSynth.7z", arch.Unzip},
 		{"ffmpeg", "ffmpeg.zip", arch.Unzip},
 	}
 
@@ -55,12 +55,14 @@ func Package(tag string) {
 
 	err = os.RemoveAll(tmpDir)
 	if err != nil {
-		hlog.Fatal(err.Error())
+		hlog.Error(err.Error())
+		return
 	}
 
 	err = os.RemoveAll(dlDir)
 	if err != nil {
-		hlog.Fatal(err.Error())
+		hlog.Error(err.Error())
+		return
 	}
 }
 
