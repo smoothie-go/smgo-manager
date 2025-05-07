@@ -171,45 +171,52 @@ func UntarXz(source, target string) error {
 	return nil
 }
 
-func Un7z(source, target string) {
-	extractFile := func(file *sz.File) {
+func Un7z(source, target string) error {
+	extractFile := func(file *sz.File) error {
 		filePath := filepath.Join(target, file.Name)
 		if file.FileInfo().IsDir() {
 			os.MkdirAll(filePath, os.ModePerm)
-			return
+			return nil
 		}
 
 		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
-			hlog.Fatal(err.Error())
+			return err
 		}
 
 		outFile, err := os.Create(filePath)
 		if err != nil {
-			hlog.Fatal(err.Error())
+			return err
 		}
 		defer outFile.Close()
 
 		f, err := file.Open()
 		if err != nil {
-			hlog.Fatal(err.Error())
+			return err
 		}
 		defer f.Close()
 
 		_, err = io.Copy(outFile, f)
 		if err != nil {
-			hlog.Fatal(err.Error())
+			return err
 		}
+		return nil
 	}
 
-	func() {
+	err := func() error {
 		archive, err := sz.OpenReader(source)
 		if err != nil {
-			hlog.Fatal(err.Error())
+			return err
 		}
 		defer archive.Close()
 
 		for _, f := range archive.File {
-			extractFile(f)
+			err := extractFile(f)
+			if err != nil {
+				return err
+			}
 		}
+		return nil
 	}()
+
+	return err
 }

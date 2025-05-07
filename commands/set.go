@@ -3,7 +3,10 @@ package commands
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/google/go-github/github"
 	"github.com/smoothie-go/smgo-manager/ghfetch"
@@ -24,13 +27,12 @@ func Set() {
 		fmt.Printf("(%d) smoothie-go %s\n", i+1, releases[i].GetName())
 	}
 
-	var release *github.RepositoryRelease = nil
-
+	var release *github.RepositoryRelease
 	var exit bool
 
 	for {
 		var option int
-		if exit == true {
+		if exit {
 			break
 		}
 		fmt.Printf("Select a version: ")
@@ -44,18 +46,44 @@ func Set() {
 		}
 	}
 
-	smgo_script_path := filepath.Join(paths.GetVersionsDirectory(), release.GetTagName(), "smoothie-go")
-	if _, err := os.Stat(smgo_script_path); os.IsNotExist(err) {
+	versionDir := filepath.Join(paths.GetVersionsDirectory(), release.GetTagName())
+	smgoBinary := ""
+	if runtime.GOOS == "windows" {
+		smgoBinary = filepath.Join(versionDir, "smoothie-go.exe")
+	} else {
+		smgoBinary = filepath.Join(versionDir, "smoothie-go")
+	}
+
+	targetPath := filepath.Join(paths.GetManagerDirectory(), "smoothie-go")
+
+	if _, err := os.Stat(smgoBinary); os.IsNotExist(err) {
 		install.Package(release.GetTagName())
 	}
 
-	err = os.Remove(filepath.Join(paths.GetManagerDirectory(), "smoothie-go"))
-	if os.IsNotExist(err) {
-	} else if err != nil {
-		hlog.Fatal(err.Error())
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "rmdir", targetPath)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			if !strings.Contains(string(output), "The system cannot find the file specified") {
+				hlog.Fatal("rmdir failed: " + string(output))
+			}
+		}
+	} else {
+		if err := os.RemoveAll(targetPath); err != nil && !os.IsNotExist(err) {
+			hlog.Fatal("Failed to remove: " + err.Error())
+		}
 	}
 
-	err = os.Symlink(smgo_script_path, filepath.Join(paths.GetManagerDirectory(), "smoothie-go"))
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "mklink", "/J", targetPath, versionDir)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			hlog.Fatal("mklink failed error: " + string(output))
+		}
+	} else {
+		err = os.Symlink(smgoBinary, targetPath)
+	}
+
 	if err != nil {
 		hlog.Fatal(err.Error())
 	}
