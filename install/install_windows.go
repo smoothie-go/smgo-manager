@@ -53,7 +53,7 @@ func Package(tag string) {
 
 	copyLayout(tmpDir, verDir)
 
-	err = os.RemoveAll(tmpDir)
+	/*err = os.RemoveAll(tmpDir)
 	if err != nil {
 		hlog.Error(err.Error())
 		return
@@ -63,12 +63,12 @@ func Package(tag string) {
 	if err != nil {
 		hlog.Error(err.Error())
 		return
-	}
+	}*/
 }
 
 func copyLayout(srcRoot, destRoot string) {
 	copyDir(filepath.Join(srcRoot, "vsbundle", "VapourSynth"), destRoot)
-	ffbin := filepath.Join(srcRoot, "ffmpeg", "ffmpeg-n7.1-latest-win-gpl-7.1", "bin")
+	ffbin := filepath.Join(srcRoot, "ffmpeg", "ffmpeg-n7.1-latest-win64-gpl-7.1", "bin")
 	for _, exe := range []string{"ffplay.exe", "ffmpeg.exe", "ffprobe.exe"} {
 		p := filepath.Join(ffbin, exe)
 		d := filepath.Join(destRoot, exe)
