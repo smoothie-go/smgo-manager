@@ -17,7 +17,7 @@ import (
 
 var links = map[string]string{
 	"ffmpeg":   "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-gpl-7.1.zip",
-	"vsbundle": "https://github.com/smoothie-go/VSBundler/releases/download/Nightly_2025.05.07_14-49/VapourSynth.zip",
+	"vsbundle": "https://github.com/smoothie-go/VSBundler/releases/download/Nightly_2025.08.14_02-55/VapourSynth.zip",
 }
 
 func Package(tag string) {
